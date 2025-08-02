@@ -28,16 +28,13 @@ import com.invoice.service.InvoiceService;
 public class InvoiceController {
 
 	@Autowired
-	InvoiceRepository invoiceRepository;
-
-	@Autowired
 	InvoiceService invoiceService;
 
 	@GetMapping("/invoices")
 	public ResponseEntity<List<Invoice>> getAllInvoices(@RequestParam(required = false) String id) {
 		try {
 			List<Invoice> invoices = new ArrayList<Invoice>();
-			invoiceRepository.findAll().forEach(invoices::add);
+			invoiceService.getAllInvoices().forEach(invoices::add);
 
 			if (invoices.isEmpty()) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -52,7 +49,7 @@ public class InvoiceController {
 
 	@GetMapping("/invoices/{id}")
 	public ResponseEntity<Invoice> getInvoicesById(@PathVariable("id") int id) {
-		Optional<Invoice> invoiceData = invoiceRepository.findById(id);
+		Optional<Invoice> invoiceData = invoiceService.getInvoiceById(id);
 
 		if (invoiceData.isPresent()) {
 			return new ResponseEntity<>(invoiceData.get(), HttpStatus.OK);
@@ -78,12 +75,11 @@ public class InvoiceController {
 		Invoice _invoice = invoiceService.payInvoice(id, invoice);
 
 		if (_invoice != null) {
-			return new ResponseEntity<>(invoiceRepository.save(_invoice), HttpStatus.OK);
+			return new ResponseEntity<>(invoiceService.save(_invoice), HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
-
 	@PostMapping("/process-overdue")
 	public ResponseEntity<String> processOverdue(@RequestBody OverdueProcessRequest request) {
 		invoiceService.processOverdue(request.getLateFee(), request.getOverdueDays());

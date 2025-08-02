@@ -36,7 +36,7 @@ public class InvoiceService {
 
 	public List<Invoice> getOverdueInvoices(LocalDate now) {
 		return invoiceRepository.findAll().stream()
-				.filter(inv -> inv.getStatus().equals("pending") && inv.getDueDate().isBefore(now)).toList();
+				.filter(inv -> inv.getStatus().equals(InvoiceStatus.PENDING) && inv.getDueDate().isBefore(now)).toList();
 	}
 
 	public Invoice payInvoice(int id, Invoice invoiceAmount) {
